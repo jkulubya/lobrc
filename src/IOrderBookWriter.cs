@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
-using jkulubya.lobrc;
 
-namespace MarketDataService.Lobster
+namespace jkulubya.lobrc
 {
     public interface IOrderBookWriter
     {
