@@ -1,7 +1,7 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using C5;
-using MarketDataService.Lobster;
 using Microsoft.Extensions.Logging;
 using SCG = System.Collections.Generic;
 
@@ -38,7 +38,7 @@ namespace jkulubya.lobrc
             while (!cancellationToken.IsCancellationRequested)
             {
                 var message = await _messageReader.ReadMessage();
-                
+
                 message.UpdateOrderPool(_orderPool);
 
                 var orderBook = GetOrderBook(message);
@@ -56,13 +56,13 @@ namespace jkulubya.lobrc
         private OrderBook GetOrderBook(Message message)
         {
             var symbol = message.Symbol;
-            if (_orderBooks.Find(ref symbol, out var orderbook))
+            if (_orderBooks.Find(ref symbol, out var orderBook))
             {
-                return orderbook;
+                return orderBook;
             }
             
-            orderbook = new OrderBook(_logger);
-            _orderBooks.Add(symbol, orderbook);
+            orderBook = new OrderBook(message.Symbol, _logger);
+            _orderBooks.Add(symbol, orderBook);
 
             return _orderBooks[symbol];
         }
