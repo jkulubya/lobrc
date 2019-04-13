@@ -1,3 +1,4 @@
+using System;
 using C5;
 using Microsoft.Extensions.Logging;
 
@@ -15,17 +16,39 @@ namespace jkulubya.lobrc
         
         public LimitOrder FindLimitOrder(string orderId)
         {
-            return Pool[orderId];
+            try
+            {
+                return Pool[orderId];
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return null;
+            }
         }
 
         public void AddLimitOrder(LimitOrder order)
         {
-            Pool.Add(order.Id, order);
+            try
+            {
+                Pool.Add(order.Id, order);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+            }
         }
 
         public void DeleteLimitOrder(string orderId)
         {
-            Pool.Remove(orderId);
+            try
+            {
+                Pool.Remove(orderId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+            }
         }
     }
 }
