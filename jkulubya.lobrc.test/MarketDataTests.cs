@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
+using NUnit.Framework;
 
 namespace jkulubya.lobrc.test
 {
+    [Parallelizable(ParallelScope.Children)]
     public class MarketDataTests
     {
-        [Fact]
+        [Test]
         public void FullExecution()
         {
             var mreader = new TestReader(new List<Message>
@@ -29,11 +30,11 @@ namespace jkulubya.lobrc.test
 
             {
                 var ob = obWriter.OrderBooks.Last();
-                Assert.Empty(ob.Bids);
+                Assert.IsEmpty(ob.Bids);
             }
         }
 
-        [Fact]
+        [Test]
         public void PartialExecution()
         {
             var mreader = new TestReader(new List<Message>
@@ -53,12 +54,12 @@ namespace jkulubya.lobrc.test
 
             {
                 var ob = obWriter.OrderBooks.Last();
-                Assert.Single(ob.Bids);
-                Assert.Equal(50, ob.Bids.Single().Quantity);
+                Assert.AreEqual(1, ob.Bids.Count());
+                Assert.AreEqual(50, ob.Bids.Single().Quantity);
             }
         }
 
-        [Fact]
+        [Test]
         public void Cancellation()
         {
             var mreader = new TestReader(new List<Message>
@@ -78,11 +79,11 @@ namespace jkulubya.lobrc.test
 
             {
                 var ob = obWriter.OrderBooks.Last();
-                Assert.Empty(ob.Asks);
+                Assert.IsEmpty(ob.Asks);
             }
         }
 
-        [Fact]
+        [Test]
         public void Bbo()
         {
             var mreader = new TestReader(new List<Message>
@@ -108,14 +109,14 @@ namespace jkulubya.lobrc.test
             controller.Stop();
 
             {
-                Assert.Equal(9, obWriter.OrderBooks.Count);
+                Assert.AreEqual(9, obWriter.OrderBooks.Count);
                 var ob = obWriter.OrderBooks.Last();
                 
-                Assert.Equal(98, ob.GetAskPrice(0));
-                Assert.Equal(150, ob.GetPriceVolume(0).Item2);
+                Assert.AreEqual(98, ob.GetAskPrice(0));
+                Assert.AreEqual(150, ob.GetPriceVolume(0).Item2);
                 
-                Assert.Equal(101, ob.GetBidPrice(0));
-                Assert.Equal(60, ob.GetPriceVolume(0).Item1);
+                Assert.AreEqual(101, ob.GetBidPrice(0));
+                Assert.AreEqual(60, ob.GetPriceVolume(0).Item1);
             }
         }
     }
