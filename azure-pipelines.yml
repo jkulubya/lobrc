@@ -32,8 +32,9 @@ steps:
 
 - task: NuGetCommand@2
   inputs:
-    command: push
-    nuGetFeedType: external
-    publishFeedCredentials: 'NuGetConnnection'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+    command: 'push'
+    searchPatternPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;$(Build.ArtifactStagingDirectory)/**/*.snupkg'
+    nuGetFeedType: 'external'
+    externalEndpoint: 'a065c124-0a41-4722-9236-fe2199204978'
   condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/dev')))
+  
