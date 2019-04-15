@@ -12,7 +12,8 @@ pool:
 variables:
   buildConfiguration: 'release'
   major: 0
-  minor: 0
+  minor: 1
+  nextVer: '0.2.0-dev-'
   patch: $[counter(format('{0}.{1}', variables['major'], variables['minor']), 0)]
 
 steps:
@@ -25,7 +26,7 @@ steps:
 - script: |
     dotnet build -c $(buildConfiguration)
     dotnet test jkulubya.lobrc.test -c $(buildConfiguration)
-    dotnet pack src/jkulubya.lobrc.csproj -c $(buildConfiguration) /p:PackageVersion=$(major).$(minor).$(patch) --output $(Build.ArtifactStagingDirectory) --no-build --no-restore
+    dotnet pack src/jkulubya.lobrc.csproj -c $(buildConfiguration) /p:PackageVersion=$(nextVer)$(patch) --output $(Build.ArtifactStagingDirectory) --no-build --no-restore
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
 
 - script: |
