@@ -31,4 +31,4 @@ steps:
 - script: |
     dotnet build -c $(buildConfiguration)
     dotnet test jkulubya.lobrc.test -c $(buildConfiguration)
-  condition: and(succeeded(), and((ne(variables['Build.SourceBranch'], 'refs/heads/master')), (ne(variables['Build.SourceBranch'], 'refs/heads/dev'))))
+  condition: and(succeeded(), and(ne(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['Build.SourceBranch'], 'refs/heads/dev')))
