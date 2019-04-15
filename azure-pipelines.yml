@@ -13,7 +13,7 @@ variables:
   buildConfiguration: 'release'
   major: 0
   minor: 0
-  patch: $[counter(format('{0}.{1}', $(major), $(minor)), 2)]
+  patch: $[counter(format('{0}.{1}', variables['major'], variables['minor']), 0)]
 
 steps:
 - script: |
