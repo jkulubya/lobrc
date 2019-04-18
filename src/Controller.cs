@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using C5;
 using Microsoft.Extensions.Logging;
 using SCG = System.Collections.Generic;
 
@@ -12,10 +11,9 @@ namespace jkulubya.lobrc
         private CancellationTokenSource CancellationTokenSource { get; } = new CancellationTokenSource();
         private readonly IMessageReader _messageReader;
         private readonly SCG.IEnumerable<IMessageWriter> _messageWriters;
-        private readonly ILogger _logger;
         private readonly IOrderBookWriter _orderBookWriter;
         private readonly OrderPool _orderPool;
-        private readonly TreeDictionary<string, OrderBook> _orderBooks = new TreeDictionary<string, OrderBook>();
+        private readonly OrderBook _orderBook;
         
         private Task ControllerTask { get; set; }
         
@@ -24,8 +22,8 @@ namespace jkulubya.lobrc
             _messageReader = messageReader;
             _messageWriters = messageWriters;
             _orderBookWriter = orderBookWriter;
-            _logger = logger;
             _orderPool = new OrderPool(logger);
+            _orderBook = new OrderBook(logger);
         }
 
         public void Start()
@@ -40,31 +38,16 @@ namespace jkulubya.lobrc
                 var message = await _messageReader.ReadMessage();
 
                 message.UpdateOrderPool(_orderPool);
-
-                var orderBook = GetOrderBook(message);
-                message.UpdateOrderBook(orderBook);
                 
-                await _orderBookWriter.Write(orderBook);
+                message.UpdateOrderBook(_orderBook);
+                
+                await _orderBookWriter.Write(_orderBook);
 
                 foreach (var messageWriter in _messageWriters)
                 {
                     await messageWriter.Write(message);
                 }
             }
-        }
-
-        private OrderBook GetOrderBook(Message message)
-        {
-            var symbol = message.Symbol;
-            if (_orderBooks.Find(ref symbol, out var orderBook))
-            {
-                return orderBook;
-            }
-            
-            orderBook = new OrderBook(message.Symbol, _logger);
-            _orderBooks.Add(symbol, orderBook);
-
-            return _orderBooks[symbol];
         }
 
         public void Stop()

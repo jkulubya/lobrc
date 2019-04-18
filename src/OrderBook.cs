@@ -12,12 +12,9 @@ namespace jkulubya.lobrc
         private readonly TreeDictionary<decimal, decimal> _asks = new TreeDictionary<decimal, decimal>();
         private readonly TreeDictionary<decimal, decimal> _bids  =
             new TreeDictionary<decimal, decimal>(SCG.Comparer<decimal>.Create((x, y) => y.CompareTo(x)));
-        
-        public string Symbol { get; }
 
-        public OrderBook(string symbol, ILogger logger)
+        public OrderBook(ILogger logger)
         {
-            Symbol = symbol;
             _logger = logger;
         }
         

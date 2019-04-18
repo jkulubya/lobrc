@@ -1,6 +1,6 @@
 namespace jkulubya.lobrc
 {
-    public enum OrderEvent
+    public enum MessageType
     {
         Submission,
         Cancellation,
