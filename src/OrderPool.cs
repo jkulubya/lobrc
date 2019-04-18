@@ -7,13 +7,14 @@ namespace jkulubya.lobrc
     public class OrderPool
     {
         private readonly ILogger _logger;
-        private HashDictionary<string, LimitOrder> Pool { get; } = new HashDictionary<string, LimitOrder>();
 
         public OrderPool(ILogger logger)
         {
             _logger = logger;
         }
-        
+
+        private HashDictionary<string, LimitOrder> Pool { get; } = new HashDictionary<string, LimitOrder>();
+
         public LimitOrder FindLimitOrder(string orderId)
         {
             try

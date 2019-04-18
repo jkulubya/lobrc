@@ -4,8 +4,19 @@ namespace jkulubya.lobrc
 {
     public class Message
     {
+        public Message(string orderId, MessageType messageType, LimitOrder order, DateTimeOffset timestamp,
+            decimal incomingSize)
+        {
+            OrderId = orderId;
+            MessageType = messageType;
+            Order = order;
+            Timestamp = timestamp;
+            IncomingSize = incomingSize;
+        }
+
         private string OrderId { get; }
-        private MessageType MessageType { get; set; }
+        private MessageType MessageType { get; }
+
         private decimal EffectiveSize
         {
             get
@@ -23,25 +34,16 @@ namespace jkulubya.lobrc
                 }
             }
         }
+
         private LimitOrder Order { get; set; }
         private DateTimeOffset Timestamp { get; }
         private decimal IncomingSize { get; set; }
-
-        public Message(string orderId, MessageType messageType, LimitOrder order, DateTimeOffset timestamp,
-            decimal incomingSize)
-        {
-            OrderId = orderId;
-            MessageType = messageType;
-            Order = order;
-            Timestamp = timestamp;
-            IncomingSize = incomingSize;
-        }
 
         public static Message New(LimitOrder order, DateTimeOffset timestamp)
         {
             return new Message(order.Id, MessageType.Submission, order, timestamp, default);
         }
-        
+
         public static Message Delete(string orderId, DateTimeOffset timestamp)
         {
             return new Message(orderId, MessageType.Deletion, default, timestamp, default);
@@ -51,7 +53,7 @@ namespace jkulubya.lobrc
         {
             return new Message(orderId, MessageType.Execution, default, timestamp, executedQuantity);
         }
-        
+
         internal void UpdateOrderPool(OrderPool orderPool)
         {
             if (MessageType == MessageType.Submission)

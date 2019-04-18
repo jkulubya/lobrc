@@ -18,11 +18,11 @@ namespace jkulubya.lobrc.test
                 Message.New(new LimitOrder("1", "symbol", false, 100, 100), DateTimeOffset.Now),
                 Message.Execution("1", 100, DateTimeOffset.Now)
             });
-            
-            var mwriters = new List<IMessageWriter>() {new MessageWriter()};
+
+            var mwriters = new List<IMessageWriter> {new MessageWriter()};
 
             var obWriter = new OrderBookWriter();
-            
+
             var controller = new Controller(mreader, mwriters, obWriter, new NullLogger<string>());
             controller.Start();
             Thread.Sleep(1000);
@@ -42,11 +42,11 @@ namespace jkulubya.lobrc.test
                 Message.New(new LimitOrder("1", "symbol", true, 100, 100), DateTimeOffset.Now),
                 Message.Execution("1", 50, DateTimeOffset.Now)
             });
-            
-            var mwriters = new List<IMessageWriter>() {new MessageWriter()};
+
+            var mwriters = new List<IMessageWriter> {new MessageWriter()};
 
             var obWriter = new OrderBookWriter();
-            
+
             var controller = new Controller(mreader, mwriters, obWriter, new NullLogger<string>());
             controller.Start();
             Thread.Sleep(1000);
@@ -67,11 +67,11 @@ namespace jkulubya.lobrc.test
                 Message.New(new LimitOrder("1", "symbol", false, 100, 100), DateTimeOffset.Now),
                 Message.Delete("1", DateTimeOffset.Now)
             });
-            
-            var mwriters = new List<IMessageWriter>() {new MessageWriter()};
+
+            var mwriters = new List<IMessageWriter> {new MessageWriter()};
 
             var obWriter = new OrderBookWriter();
-            
+
             var controller = new Controller(mreader, mwriters, obWriter, new NullLogger<string>());
             controller.Start();
             Thread.Sleep(1000);
@@ -96,13 +96,13 @@ namespace jkulubya.lobrc.test
                 Message.New(new LimitOrder("5", "symbol", false, 98, 150), DateTimeOffset.Now),
                 Message.Execution("1", 50, DateTimeOffset.Now),
                 Message.Execution("2", 10, DateTimeOffset.Now),
-                Message.New(new LimitOrder("6", "symbol", true, 99, 500), DateTimeOffset.Now),
+                Message.New(new LimitOrder("6", "symbol", true, 99, 500), DateTimeOffset.Now)
             });
-            
+
             var mwriters = new List<IMessageWriter> {new MessageWriter()};
 
             var obWriter = new OrderBookWriter();
-            
+
             var controller = new Controller(mreader, mwriters, obWriter, new NullLogger<string>());
             controller.Start();
             Thread.Sleep(1000);
@@ -111,10 +111,10 @@ namespace jkulubya.lobrc.test
             {
                 Assert.AreEqual(9, obWriter.OrderBooks.Count);
                 var ob = obWriter.OrderBooks.Last();
-                
+
                 Assert.AreEqual(98, ob.GetAskPrice(0));
                 Assert.AreEqual(150, ob.GetPriceVolume(0).Item2);
-                
+
                 Assert.AreEqual(101, ob.GetBidPrice(0));
                 Assert.AreEqual(60, ob.GetPriceVolume(0).Item1);
             }

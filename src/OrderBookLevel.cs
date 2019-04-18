@@ -7,7 +7,7 @@ namespace jkulubya.lobrc
             Price = price;
             Quantity = quantity;
         }
-        
+
         public decimal Price { get; }
         public decimal Quantity { get; }
     }

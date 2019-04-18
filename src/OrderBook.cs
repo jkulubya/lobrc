@@ -8,38 +8,64 @@ namespace jkulubya.lobrc
 {
     public class OrderBook
     {
-        private readonly ILogger _logger;
         private readonly TreeDictionary<decimal, decimal> _asks = new TreeDictionary<decimal, decimal>();
-        private readonly TreeDictionary<decimal, decimal> _bids  =
+
+        private readonly TreeDictionary<decimal, decimal> _bids =
             new TreeDictionary<decimal, decimal>(SCG.Comparer<decimal>.Create((x, y) => y.CompareTo(x)));
+
+        private readonly ILogger _logger;
 
         public OrderBook(ILogger logger)
         {
             _logger = logger;
         }
-        
+
+        public SCG.IEnumerable<OrderBookLevel> Bids
+        {
+            get
+            {
+                SCG.IEnumerable<KeyValuePair<decimal, decimal>> bids;
+                lock (_bids)
+                {
+                    bids = _bids.Snapshot();
+                }
+
+                return bids.Select(b => new OrderBookLevel(b.Key, b.Value));
+            }
+        }
+
+        public SCG.IEnumerable<OrderBookLevel> Asks
+        {
+            get
+            {
+                SCG.IEnumerable<KeyValuePair<decimal, decimal>> asks;
+                lock (_asks)
+                {
+                    asks = _asks.Snapshot();
+                }
+
+                return asks.Select(b => new OrderBookLevel(b.Key, b.Value));
+            }
+        }
+
         internal void AddPriceSize(decimal price, decimal sizeDelta, bool isBid)
         {
             var dict = isBid ? _bids : _asks;
-            if(dict.Find(ref price, out var quantity))
+            if (dict.Find(ref price, out var quantity))
             {
                 lock (dict)
                 {
-                    quantity = Math.Max((quantity + sizeDelta), 0M);
+                    quantity = Math.Max(quantity + sizeDelta, 0M);
                     if (quantity == decimal.Zero)
-                    {
                         dict.Remove(price);
-                    }
                     else
-                    {
                         dict[price] = quantity;
-                    }
                 }
             }
             else
             {
-                if(sizeDelta <= 0) return;
-                
+                if (sizeDelta <= 0) return;
+
                 lock (dict)
                 {
                     dict[price] = sizeDelta;
@@ -51,11 +77,12 @@ namespace jkulubya.lobrc
         {
             SCG.IEnumerable<KeyValuePair<decimal, decimal>> asks;
             SCG.IEnumerable<KeyValuePair<decimal, decimal>> bids;
-            
+
             lock (_asks)
             {
                 asks = _asks.Snapshot();
             }
+
             lock (_bids)
             {
                 bids = _bids.Snapshot();
@@ -71,11 +98,10 @@ namespace jkulubya.lobrc
         {
             try
             {
-                SCG.IEnumerable<C5.KeyValuePair<decimal, decimal>> asks;
+                SCG.IEnumerable<KeyValuePair<decimal, decimal>> asks;
                 lock (_asks)
                 {
                     asks = _asks.Snapshot();
-                    
                 }
 
                 var price = asks.ElementAt(level);
@@ -107,34 +133,6 @@ namespace jkulubya.lobrc
             {
                 _logger.LogError(e, e.Message);
                 return null;
-            }
-        }
-
-        public SCG.IEnumerable<OrderBookLevel> Bids
-        {
-            get
-            {
-                SCG.IEnumerable<KeyValuePair<decimal, decimal>> bids;
-                lock (_bids)
-                {
-                    bids = _bids.Snapshot();
-                }
-
-                return bids.Select(b => new OrderBookLevel(b.Key, b.Value));
-            }
-        }
-        
-        public SCG.IEnumerable<OrderBookLevel> Asks
-        {
-            get
-            {
-                SCG.IEnumerable<KeyValuePair<decimal, decimal>> asks;
-                lock (_asks)
-                {
-                    asks = _asks.Snapshot();
-                }
-
-                return asks.Select(b => new OrderBookLevel(b.Key, b.Value));
             }
         }
     }
